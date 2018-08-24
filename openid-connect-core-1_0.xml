@@ -1174,12 +1174,6 @@
 		  then the Authorization Server returns a positive response;
 		  otherwise, it SHOULD return
 		  an error, such as <spanx style="verb">login_required</spanx>.
-		  When possible, an <spanx style="verb">id_token_hint</spanx>
-		  SHOULD be present when <spanx style="verb">prompt=none</spanx> is used
-		  and an <spanx style="verb">invalid_request</spanx> error
-		  MAY be returned if it is not;
-		  however, the server SHOULD respond successfully when possible,
-		  even if it is not present.
 		  The Authorization Server need not be listed as an
 		  audience of the ID Token when it is used as an
 		  <spanx style="verb">id_token_hint</spanx> value.
