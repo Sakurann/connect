@@ -184,6 +184,18 @@
 	    This is used as an indication of the identity of the
 	    End-User that the RP is requesting be logged out by the OP.
 	  </t>
+	  <t hangText="client_id">
+	    <vspace/>
+	    OPTIONAL.
+	    OAuth 2.0 Client Identifier valid at the Authorization Server. When both 
+			<spanx style="verb">client_id</spanx> and <spanx style="verb">id_token_hint</spanx> 
+			the OP MUST verify the Client Identifier matches the one used when issuing the
+			ID Token. The most common use case for this parameter is to specify the Client Identifier
+			when <spanx style="verb">post_logout_redirect_uri</spanx> is used but 
+			<spanx style="verb">id_token_hint</spanx> is not. Other use cases MAY include
+			symmetrically encrypted ID Tokens that require the <spanx style="verb">client_id</spanx>
+			to be specified by other means so that they can be decrypted by the OP.
+	  </t>
 	  <t hangText="post_logout_redirect_uri">
 	    <vspace/>
 	    OPTIONAL.
@@ -199,7 +211,6 @@
 	    The value MUST have been previously registered with the OP,
 	    either using the <spanx style="verb">post_logout_redirect_uris</spanx>
 	    Registration parameter or via another mechanism.
-	    An <spanx style="verb">id_token_hint</spanx> is also REQUIRED when this parameter is included.
 	  </t>
 	  <t hangText="state">
 	    <vspace/>
@@ -224,6 +235,15 @@
 	    followed by English (without a region designation).
 	    An error SHOULD NOT result if some or all of the requested locales
 	    are not supported by the OpenID Provider.
+	  </t>
+	  <t hangText="logout_hint">
+	    <vspace/>
+	    OPTIONAL.
+	    Hint to the Authorization Server regarding the End-User that is logging out.
+			The value and meaning of this parameter is left up to the OP's discretion.
+			However, in most common use cases, the value contain an email address,
+			phone number, username or session identifier collected by the RP during
+			its session with the End-User.
 	  </t>
 	</list>
       </t>
@@ -255,9 +275,11 @@
 	and MAY decline to act upon it.
       </t>
       <t>
-	At the Logout Endpoint, the OP SHOULD ask the End-User whether
-	to log out of the OP as well.
-	If the End-User says "yes", then the OP MUST log out the End-User.
+	At the Logout Endpoint, the OP SHOULD prompt the End-User to confirm the logout intent. 
+	The OP MUST do so if <spanx style="verb">id_token_hint</spanx> was not provided 
+	or if its claims no longer suggest it relates to the current OP session and/or currently
+	logged in end-user. If the End-User confirms the logout intent, then the OP MUST log out
+	the End-User.
       </t>
       <t>
 	As part of the OP logging out the End-User,
@@ -324,10 +346,6 @@
 	in which case the redirection target is
 	the <spanx style="verb">post_logout_redirect_uri</spanx> parameter
 	value sent by the initiating RP.
-	An <spanx style="verb">id_token_hint</spanx> carring an ID Token for the RP
-	is also REQUIRED when requesting post-logout redirection;
-	if it is not supplied with <spanx style="verb">post_logout_redirect_uri</spanx>,
-	the OP MUST NOT perform post-logout redirection.
 	The OP also MUST NOT perform post-logout redirection if the
 	<spanx style="verb">post_logout_redirect_uri</spanx> value supplied does not exactly match
 	one of the previously registered <spanx style="verb">post_logout_redirect_uris</spanx> values.
@@ -392,11 +410,9 @@
 
     <section anchor="Security" title="Security Considerations">
       <t>
-	The <spanx style="verb">id_token_hint</spanx> parameter to a logout request
-	can be used to determine which RP initiated the logout request.
-	Logout requests without a valid <spanx style="verb">id_token_hint</spanx> value
-	are a potential means of denial of service; therefore,
-	OPs may want to require explicit user confirmation before acting upon them.
+	Logout requests without a validated <spanx style="verb">id_token_hint</spanx> value
+	are a potential means of denial of service; therefore, OPs MUST require explicit user 
+	confirmation before acting upon them.
       </t>
     </section>
 
@@ -694,6 +710,18 @@
 
     <section anchor="History" title="Document History">
       <t>[[ To be removed from the final specification ]]</t>
+
+      <t>
+	-02
+	<list style="symbols">
+		<t>
+	    Fixed #1182 - Added <spanx style="verb">logout_hint</spanx> parameter at Logout Endpoint.
+	  </t>
+		<t>
+	    Fixed #1032 - Added <spanx style="verb">client_id</spanx> parameter at Logout Endpoint.
+	  </t>
+        </list>
+      </t>
 
       <t>
 	-01
