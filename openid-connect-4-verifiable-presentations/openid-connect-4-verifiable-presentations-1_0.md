@@ -58,30 +58,31 @@ This specification defines an extension of OpenID Connect to allow presentation 
 
 {mainmatter}
 
-# Introduction
+# 1. Introduction
 
 This specification extends OpenID Connect with support for presentation of claims via W3C Verifiable Credentials. This allows existing OpenID Connect RPs to extends their reach towards claims sources asserting claims in this format. It also allows new applications built using Verifiable Credentials to utilize OpenID Connect as integration and interoperability layer towards credential holders. 
 
-# Use Cases
+# 2. Use Cases
 
-## Verifier accesses Wallet via OpenID Connect
+## 2.1 Verifier accesses Wallet via OpenID Connect
 
 A Verifier uses OpenID Connect to obtain verifiable presentations. This is a simple and mature way to obtain identity data. From a technical perspective, this also makes integration with OAuth-protected APIs easier as OpenID Connect is based on OAuth.  
 
-## Existing OpenID Connect RP integrates SSI wallets
+## 2.2 Existing OpenID Connect RP integrates SSI wallets
 
 An application currently utilizing OpenID Connect for accessing various federated identity providers can use the same protocol to also integrate with emerging SSI-based wallets. Thats an conveient transition path leveraging existing expertise and protecting investments made.
 
-## Existing OpenID Connect OP as custodian of End-User Credentials
+## 2.3 Existing OpenID Connect OP as custodian of End-User Credentials
 
 An existing OpenID Connect may extends its service by maintaining credentials issued by other claims sources on behalf of its customers. Customers can mix claims of the OP and from their credentials to fulfil authentication requests. 
 
-## Federated OpenID Connect OP adds device-local mode
+## 2.4 Federated OpenID Connect OP adds device-local mode
 
 An extisting OpenID Connect OP with a native user experience (PWA or native app) issues Verifiable Credentials and stores it on the user's device linked to a private key residing on this device under the user's control. For every authentication request, the native user experience first checks whether this request can be fulfilled using the locally stored credentials. If so, it generates a presentations signed with the user's keys in order to prevent replay of the credential. 
 
 This approach dramatically reduces latency and reduces load on the OP's servers. Moreover, the user can identity, authenticate, and authorize even in situations with unstable or without internet connectivity. 
-# Terminology
+
+# 3. Terminology
 
 Credential
 
@@ -102,7 +103,8 @@ A verifiable presentation is a tamper-evident presentation encoded in such a way
 W3C Verifiable Credential Objects
 
 Both verifiable credentials and verifiable presentations
-# Overview 
+
+# 4. Overview 
 
 This specification defines mechanisms to allow RPs to request and OPs to provide Verifiable Presentations via OpenID Connect. 
 
@@ -116,7 +118,8 @@ This specification introduces the following representations to exchange verifiab
 * The new token types "VP Token" used as generic container for verifiable presentation objects in authentication and token responses in addition to ID Tokens.
 
 All representations share the same container format.
-# Container Format
+
+# 5. Container Format
 
 A verifiable presentation container is an array of objects, each of them containing the following fields:
 
@@ -201,7 +204,8 @@ Here is an example:
    }
 ]
 ```
-# JWT parameters extention
+
+# 6. JWT parameters extention
 
 Verifiable credential objects can be exchanged between OP and RP enveloped in JWT claims in ID tokens or userinfo responses.  
 
@@ -213,7 +217,7 @@ This claim can be added to ID Tokens, Userinfo responses as well as Access Token
 
 Note that above claim has to be distinguished from `vp` or `vc` claims as defined in [JWT proof format](https://www.w3.org/TR/vc-data-model/#json-web-token). `vp` or `vc` claims contain those parts of the standard verifiable credentials and verifiable presentations where no explicit encoding rules for JWT exist. They are used as part of a verifiable credential or presentation in JWT format. They are not meant to include complete verifiable credentials or verifiable presentations objects which is the purpose of the claims defined in this specification.
 
-# New Tokens extention
+# 7. New Tokens extention
 
 This specifications introduces the following new token:
 
@@ -226,11 +230,11 @@ If the `vp_token` is returned in the frontchannel, a hash of the respective toke
 `vp_hash`
 OPTIONAL. Hash value of `vp_token` that represents the W3C VP. Its value is the base64url encoding of the left-most half of the hash of the octets of the ASCII representation of the `vp_token` value, where the hash algorithm used is the hash algorithm used in the alg Header Parameter of the ID Token's JOSE Header. For instance, if the alg is RS256, hash the vp_token value with SHA-256, then take the left-most 128 bits and base64url encode them. The `vp_hash` value is a case sensitive string.
 
-# Requesting Verifiable Presentations 
+# 8. Requesting Verifiable Presentations 
 
 This section illustrates how the `claims` parameter can be used for requesting verified presentations. It serves as a starting point to drive discussion about this aspect. There are other candidate approaches for this purpose (most notably [DIF Presentation Exchange](https://identity.foundation/presentation-exchange/). They will be evaluated as this draft evolves. 
 
-## Embedded Verifiable Presentations
+## 8.1 Embedded Verifiable Presentations
 
 A Verifiable Presentation embedded in an ID Token (or userinfo response) is requested by adding an element `verifiable_presentations` to the `id_token` (or `userinfo`) top level element of the `claims` parameter. This element must contain the following element:
 
@@ -262,19 +266,19 @@ Here is a non-normative example:
    }
 }
 ```
-### VP Token
+### 8.1.1 VP Token
 
 A VP Token is requested by adding a new top level element `vp_token` to the `claims` parameter. This element contains the sub elements as defined above.
 
-#  Examples 
+#  9. Examples 
 
 This section illustrates examples when W3C Verifiable Credentials objects are requested using `claims` parameter and returned inside ID Tokens.
 
-## Self-Issued OpenID Provider with Verifiable Presentation in ID Token 
+## 9.1 Self-Issued OpenID Provider with Verifiable Presentation in ID Token 
 
 Below are the examples when W3C Verifiable Credentials are requested and returned inside ID Token as part of Self-Issued OP response. ID Token contains a `verifiable_presentations` claim with the Verifiable Presentation data. It can also contain `verifiable_credentials` element with the Verifiable Credential data. 
 
-### Authentication request
+### 9.1.1 Authentication request
 
 The following is a non-normative example of how an RP would use the `claims` parameter to request the `verifiable_presentations` claim in the `id_token`:
 
@@ -294,7 +298,7 @@ The following is a non-normative example of how an RP would use the `claims` par
       client.example.org%2Frf.txt%22%7D
       
 ```
-#### `claims` parameter 
+#### 9.1.1.1 `claims` parameter 
 
 Below is a non-normative example of how the `claims` parameter can be used for requesting verified presentations signed as a JWT.
 
@@ -312,7 +316,7 @@ Below is a non-normative example of how the `claims` parameter can be used for r
    }
 }
 ```
-### Authentication Response 
+### 9.1.2 Authentication Response 
 
 Below is a non-normative example of ID Token that includes `verifiable_presentations` claim.
 
@@ -370,8 +374,8 @@ Note that `vp` is used to contain only "those parts of the standard verifiable p
     }   
   }
 ```
-## Self-Issued OpenID Provider with Verifiable Presentation in ID Token (selective disclosure)
-### `claims` parameter 
+## 9.2 Self-Issued OpenID Provider with Verifiable Presentation in ID Token (selective disclosure)
+### 9.2.1 `claims` parameter 
 
 Below is a non-normative example of how the `claims` parameter can be used for requesting verified presentations signed as Linked Data Proofs.
 
@@ -393,7 +397,7 @@ Below is a non-normative example of how the `claims` parameter can be used for r
    }
 }
 ```
-### Authentication Response 
+### 9.2.2 Authentication Response 
 
 Below is a non-normative example of ID Token that includes `verifiable_presentations` claim.
 
@@ -466,11 +470,11 @@ Below is a non-normative example of ID Token that includes `verifiable_presentat
    }
 }
 ```
-## Authorization Code Flow with Verifiable Presentation in ID Token
+## 9.3 Authorization Code Flow with Verifiable Presentation in ID Token
 
 Below are the examples when W3C Verifiable Credentials are requested and returned inside ID Token as part of Authorization Code flow. ID Token contains a `verifiable_presentations` element with the Verifiable Presentations data. 
 
-### Authentication Request
+### 9.3.1 Authentication Request
 
 ```
   GET /authorize?
@@ -483,7 +487,7 @@ Below are the examples when W3C Verifiable Credentials are requested and returne
     &nonce=n-0S6_WzA2Mj HTTP/1.1
   Host: server.example.com
 ```
-#### Claims parameter 
+#### 9.3.1.1 Claims parameter 
 
 Below is a non-normative example of how the `claims` parameter can be used for requesting verified presentations signed as JWT.
 
@@ -501,7 +505,7 @@ Below is a non-normative example of how the `claims` parameter can be used for r
    }
 }
 ```
-### Authentication Response
+### 9.3.2 Authentication Response
 
 ```
 HTTP/1.1 302 Found
@@ -510,7 +514,7 @@ HTTP/1.1 302 Found
     &state=af0ifjsldkj
 ```
 
-### Token Request
+### 9.3.3 Token Request
 
 ```
   POST /token HTTP/1.1
@@ -522,11 +526,11 @@ HTTP/1.1 302 Found
   &code=SplxlOBeZQQYbYS6WxSbIA
   &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
 ```
-## Authorization Code Flow with Verifiable Presentation returned from the UserInfo endpoint
+## 9.4 Authorization Code Flow with Verifiable Presentation returned from the UserInfo endpoint
 
 Below are the examples when verifiable presentation is requested and returned from the UserInfo endpoint as part of OpenID Connect Authorization Code Flow. UserInfo response contains a `verifiable_presentations` element with the Verifiable Presentation data. 
 
-### Authentication Request
+### 9.4.1 Authentication Request
 
 ```
   GET /authorize?
@@ -540,7 +544,7 @@ Below are the examples when verifiable presentation is requested and returned fr
   Host: server.example.com
 ```
 
-#### Claims parameter 
+#### 9.4.1.1 Claims parameter 
 
 Below is a non-normative example of how the `claims` parameter can be used for requesting verified presentations signed as JWT.
 
@@ -562,7 +566,7 @@ Below is a non-normative example of how the `claims` parameter can be used for r
    }
 }
 ```
-### Authentication Response
+### 9.4.2 Authentication Response
 
 ```
 HTTP/1.1 302 Found
@@ -571,7 +575,7 @@ HTTP/1.1 302 Found
     &state=af0ifjsldkj
 ```
 
-### Token Request
+### 9.4.3 Token Request
 
 ```
   POST /token HTTP/1.1
@@ -583,9 +587,9 @@ HTTP/1.1 302 Found
   &code=SplxlOBeZQQYbYS6WxSbIA
   &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
 ```
-### Token Response
+### 9.4.4 Token Response
 
-#### id_token
+#### 9.4.4.1 id_token
 
 ```json
 {
@@ -598,7 +602,7 @@ HTTP/1.1 302 Found
   "auth_time": 1615910535
 }
 ```
-### UserInfo Response 
+### 9.4.5 UserInfo Response 
 
 Below is a non-normative example of a UserInfo Response that includes a `verifiable_presentations` claim:
 
@@ -622,8 +626,8 @@ Below is a non-normative example of a UserInfo Response that includes a `verifia
 
 JWT inside the `verifiable_presentations` claim when decoded equals to a verifiable presentation in Self-Issued OP with Verifiable Presentation in ID Token, Authentication Response section.
 
-## Authorization Code Flow with Verifiable Presentation returned from the UserInfo endpoint (LDP)
-### Claims parameter 
+## 9.5 Authorization Code Flow with Verifiable Presentation returned from the UserInfo endpoint (LDP)
+### 9.5.1 Claims parameter 
 
 Below is a non-normative example of how the `claims` parameter can be used for requesting verified presentations signed as Linked Data Proofs.
 
@@ -650,9 +654,9 @@ Below is a non-normative example of how the `claims` parameter can be used for r
    }
 }
 ```
-### Token Response
+### 9.5.2 Token Response
 
-#### id_token
+#### 9.5.2.1 id_token
 
 ```json
 {
@@ -665,7 +669,7 @@ Below is a non-normative example of how the `claims` parameter can be used for r
   "auth_time": 1615910535
 }
 ```
-### UserInfo Response 
+### 9.5.3 UserInfo Response 
 
 Below is a non-normative example of a UserInfo Response that includes `verifiable_presentations` claim:
 
@@ -732,10 +736,10 @@ Below is a non-normative example of a UserInfo Response that includes `verifiabl
    ]
 }
 ```
-## SIOP with vp_token
+## 9.6 SIOP with vp_token
 This section illustrates the protocol flow for the case of communication through the front channel only (like in SIOP).
 
-### Authentication request
+### 9.6.1 Authentication request
 
 The following is a non-normative example of how an RP would use the `claims` parameter to request claims in the `vp_token`:
 
@@ -753,7 +757,7 @@ The following is a non-normative example of how an RP would use the `claims` par
       client.example.org%2Frf.txt%22%7D
       
 ```
-#### claims parameter
+#### 9.6.1.1 claims parameter
 
 ```json
 {
@@ -771,7 +775,7 @@ The following is a non-normative example of how an RP would use the `claims` par
    }
 }
 ```
-### Authentication Response (including vp_token)
+### 9.6.2. Authentication Response (including vp_token)
 
 The successful authentication response contains a `vp_token` parameter along with  `id_token` and `state`.
 ```
@@ -782,7 +786,7 @@ The successful authentication response contains a `vp_token` parameter along wit
     &state=af0ifjsldkj
       
 ```
-#### id_token
+#### 9.6.2.1 id_token
 
 This example shows an ID Token containing a `vp_hash`:
 
@@ -808,7 +812,7 @@ This example shows an ID Token containing a `vp_hash`:
    }
 }
 ```
-#### vp_token content
+#### 9.6.2.2 vp_token content
 
 ```json
 [
@@ -864,11 +868,11 @@ This example shows an ID Token containing a `vp_hash`:
    }
 ]
 ```
-## Authorization Code Flow with vp_token
+## 9.7 Authorization Code Flow with vp_token
 
 This section illustrates the protocol flow for the case of communication using frontchannel and backchannel (utilizing the authorization code flow).
 
-### Authentication Request
+### 9.7.1 Authentication Request
 
 ```
   GET /authorize?
@@ -882,7 +886,7 @@ This section illustrates the protocol flow for the case of communication using f
   Host: server.example.com
 ```
 
-#### Claims parameter
+#### 9.7.1.1 Claims parameter
 
 ```json
 {
@@ -901,7 +905,7 @@ This section illustrates the protocol flow for the case of communication using f
 }
 ```
 
-### Authentication Response
+### 9.7.2 Authentication Response
 ```
 HTTP/1.1 302 Found
   Location: https://client.example.org/cb?
@@ -909,7 +913,7 @@ HTTP/1.1 302 Found
     &state=af0ifjsldkj
 ```
 
-### Token Request
+### 9.7.3 Token Request
 ```
   POST /token HTTP/1.1
   Host: server.example.com
@@ -921,7 +925,7 @@ HTTP/1.1 302 Found
   &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
 ```
 
-### Token Response (including vp_token)
+### 9.7.4 Token Response (including vp_token)
 
 ```json
 {
@@ -984,7 +988,7 @@ HTTP/1.1 302 Found
    ]
 }
 ```
-#### id_token
+#### 9.7.4.1 id_token
 
 ```json
 {
