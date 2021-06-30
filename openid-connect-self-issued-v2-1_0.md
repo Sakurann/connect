@@ -43,15 +43,23 @@ December 8, 2020
     
     3.3. Self-Issued ID Token Validation
 
-4. References
-    
-    4.1. Normative References
-    
-    4.2. Non-Normative References
-    
-    4.3. Relationships to other documents
+4. Security Considerations
 
-5. Notices
+    4.1. Invocation Using Custom Schemas
+
+5. Privacy Considerations
+
+    5.1. Selective Disclosure and Un-linkable Presentations
+
+6. References
+    
+    6.1. Normative References
+    
+    6.2. Non-Normative References
+    
+    6.3. Relationships to other documents
+
+7. Notices
 
 Appendix A.History
 
@@ -115,6 +123,9 @@ Out of Scope:
 ## 1.2. Terms and definitions
 Common terms in this document come from four primary sources: [DID-CORE],[VC-DATA], [RFC6749] and [OpenID.Core]. In the case where a term has a definition that differs, the definition below is authoritative.
 
+- Trust framework
+    -  a legally enforceable set of specifications, rules, and agreements that govern a multi-party system established for a common purpose, designed for conducting specific types of transactions among a community of participants, and bound by a common set of requirements. [OIX]
+
 ## 1.3. Abbreviations 
 - Self-Issued OP: Self-Issued OpenID Provider
 - RP: Relying Party
@@ -146,11 +157,11 @@ Self-Issued OpenID Provider Request is an OpenID Connect Authentication Request 
 ## 2 Discovery and Negotiation
 
 ## 2.1. Self-Issued OpenID Provider Discovery
-Self-Issued OP MUST associate a custom schema `openid://` with itself. Relying Party MUST call `openid://` when sending a request to a Self-Issued OP.
+Self-Issued OP SHALL belong to at least one trust framework. The trust framework is responsible for hosting a public website with the list of universal links that the RP can display to the End-user to let the End-user choose the application with which to use Self-Issued OP.
 
-Note: Custom schema is a mechanism offered by Mobile Operating System providers. If an application developer registers custom schema with the application, that application will be invoked when a request containing custom schema is received by the device.
+If the End-user has already chosen an app within a particular framework, that app will be automatically launched. If the End-user has not done so yet, the End-user will be displayed with the options of available apps.
 
-Note: When more than one Self-issued OP with the same custom schema has been installed on one device, there could be confusion over which Self-Issued OP gets invoked. 
+When Self-Issued OP cannot belog to a trust framework, it may consider the usage of custom schemas as a way to invoke a Self-Issued OP, but it is NOT RECOMMENDED. 
 
 ## 2.2. Relying Party Registration
 
@@ -402,10 +413,29 @@ The following is a non-normative example of a base64url decoded Self-Issued ID T
 　}
   
 ```
-   
-## 4. References
 
-### 4.1. Normative References
+## 4. Security Considerations
+
+### 4.1. Invocation using Custom Schema
+
+Usage of custom schemas as a way to invoke a Self-Issued OP may lead to phishing attacks and undefined behavior. 
+
+Custom schema is a mechanism offered by Mobile Operating System providers. If an application developer registers custom schema with the application, that application will be invoked when a request containing custom schema is received by the device.
+
+Any malicious app can register the custom schema already used by another app, imitate the user interface and impersonate a good app. 
+
+When more than one Self-issued OP with the same custom schema has been installed on one device, the behavior of Self-Issued OP is undefined. 
+
+## 5. Privacy Considerations
+
+### 5.1. Selective disclosure and un-linkable presentations
+
+Usage of decentralized identifiers does not prevent possible RP correlation and depending on how status check of presentation is done, IdP correlation can occur.
+Consider supporting selective disclosure and un-linkable presentations using zero-knowledge proofs instead of traditional correlatable signatures.
+   
+## 6. References
+
+### 6.1. Normative References
 - [DID-CORE] https://github.com/w3c/did-core (not yet a ratified draft)
 - [VC-DATA] https://www.w3.org/TR/vc-data-model/
 - [RFC6749] https://tools.ietf.org/html/rfc6749
@@ -415,14 +445,15 @@ The following is a non-normative example of a base64url decoded Self-Issued ID T
 - [OpenID.Registration] https://openid.net/specs/openid-connect-registration-1_0.html
 - [did-spec-registries] https://w3c.github.io/did-spec-registries/#did-methods
 
-### 4.2. Non-Normative References
+### 6.2. Non-Normative References
 - [draft-jones-self_issued_identifier] https://bitbucket.org/openid/connect/src/master/SIOP/draft-jones-self_issued_identifier.md
 - [siop-requirements] https://bitbucket.org/openid/connect/src/master/SIOP/siop-requirements.md
+- [OIX] https://openidentityexchange.org/networks/87/item.html?id=365
 
-### 4.3. Relationships to other documents 
+### 6.3. Relationships to other documents 
 The scope of this draft was an extention to OpenID Connect Chapter 7 Self-Issued OpenID Provider. However, some sections of it could become applicable more generally to the entire OpenID Connect specification.
 
-## 5. Notices
+## 7. Notices
 Copyright (c) 2020 The OpenID Foundation.
 
 The OpenID Foundation (OIDF) grants to any Contributor, developer, implementer, or other interested party a non-exclusive, royalty free, worldwide copyright license to reproduce, prepare derivative works from, distribute, perform and display, this Implementers Draft or Final Specification solely for the purposes of (i) developing specifications, and (ii) implementing Implementers Drafts and Final Specifications based on such documents, provided that attribution be made to the OIDF as the source of the material, but that such attribution does not indicate an endorsement by the OIDF.
