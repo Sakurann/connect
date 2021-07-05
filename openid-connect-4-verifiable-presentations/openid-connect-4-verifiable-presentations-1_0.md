@@ -70,7 +70,7 @@ A Verifier uses OpenID Connect to obtain verifiable presentations. This is a sim
 
 ## Existing OpenID Connect RP integrates SSI wallets
 
-An application currently utilizing OpenID Connect for accessing various federated identity providers can use the same protocol to also integrate with emerging SSI-based wallets. Thats an conveient transition path leveraging existing expertise and protecting investments made.
+An application currently utilizing OpenID Connect for accessing various federated identity providers can use the same protocol to also integrate with emerging SSI-based wallets. Thats an convenient transition path leveraging existing expertise and protecting investments made.
 
 ## Existing OpenID Connect OP as custodian of End-User Credentials
 
@@ -102,6 +102,11 @@ A verifiable presentation is a tamper-evident presentation encoded in such a way
 W3C Verifiable Credential Objects
 
 Both verifiable credentials and verifiable presentations
+
+Proof
+
+One or more cryptographic proofs that can be used to detect tampering and verify the authorship of a credential or presentation. The specific method used for an embedded proof MUST be included using the type property. (see https://www.w3.org/TR/vc-data-model/#proofs-signatures)
+
 # Overview 
 
 This specification defines mechanisms to allow RPs to request and OPs to provide Verifiable Presentations via OpenID Connect. 
@@ -1031,6 +1036,167 @@ HTTP/1.1 302 Found
           <date day="8" month="Nov" year="2014"/>
         </front>
  </reference>
+
+# JSON-LD Proofs
+
+Verifiable Credential (VC) and Verifiable Presentation (VP) [JSON-LD
+proof](https://w3c-ccg.github.io/ld-proofs) contains information about digitally
+signed VCs or VPs in JSON-LD format. This section details the signing
+processes for digital algorithms that take HMACed content as input.
+
+First, we present JSON-LD canonicalization that transforms a JSON-LD object into
+a normalized form suitable for signing. Next, we describe how to create single
+and multiple VC/VP proofs. Last, we summarize how to crate [CMS Advanced digital
+Electronic Signatures (CAdES)](https://datatracker.ietf.org/doc/html/rfc5126),
+[JSON Advanced digital Electronic Signatures
+(JAdES)](https://www.etsi.org/deliver/etsi_ts/119100_119199/11918201/01.01.01_60/ts_11918201v010101p.pdf)
+and [JSON Web Signatures (JWS)](https://tools.ietf.org/html/rfc7515) signatures.
+
+## VC and VP serialization overview
+
+To sign a VC or VP, we need to transform it into a normalized form that is
+independent of the arrangement of the input data. JSON-LD canonicalization
+deserializes the JSON-LD to RDF and applies URDNA2015 canonicalization
+algorithm. For details see [RDF Dataset
+Canonicalization](https://json-ld.github.io/rdf-dataset-canonicalization/spec/index.html)
+and [Deserialize JSON-LD to RDF
+Algorithm](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm).
+
+Canonicalization ensures that JSON(-LD) object elements are always ordered
+regardless of the initial arrangement. JSON standard ensures that the list order
+is unaffected by the canonicalization, hence we MUST NOT change the order of any
+list in the VC or VP, after the VC/VP is signed. Changing the elements order
+would invalidate the signature, hence it is advisable to always store the VC/VP
+in the original format.
+
+JSON-LD objects contain links to JSON-LD schemas. Availability and immutability
+of the JSON-LD schema is crucial for the canonicalization and proof validation.
+Hence we SHOULD:
+
+* store and maintain schemas locally and share them with the JSON-LD, or
+* load schemas from trusted sources, or
+* embed schemas into the JSON-LD.
+
+## Single proof
+
+This section summarizes how to sign VCs and VPs in JSON-LD format. The approach
+is applicable to all signature algorithms that take MAC or HMAC of the message as
+input. To create a VC/VP JSON-LF proof proceeds as follows:
+
+1. Create a VC/VP in JSON-LD format without the proof claim. Result is a VC/VP body.
+2. Canonicalize the VC/VP body by deserializing the VC/VP body into RDF and applying URDNA2015 RDF canonicalization. Result is canonicalized VC/VP body.
+3. Compute SHA256 digest of the canonicalized VC/VP body. Result is VC/VP body digest.
+4. Create a proof object in JSON-LD format without the proofValue and jws claims. Result is a VC/VP proof.
+5. Canonicalize the VC/VP proof by deserializing the VC/VP proof into RDF and applying URDNA2015 RDF canonicalization. Result is canonicalized VC/VP proof.
+6. Compute SHA256 digest of the canonicalized VC/VP proof. Result is VC/VP proof digest.
+7. Concatenate the resulting digests as: (VC/VP proof digest) || (VC/VP body digest). Result is a signing payload.
+8. Use the signing payload as input to the signing algorithm and sign it.
+9. Add the signature to the VC/VP proof object.
+10. Construct the VC/VP by inserting the new proof object into the VC/VP body.
+
+### Multiple proofs (WIP)
+
+In some cases VC need to be signed by several issuers or VPs need to be signed with different keys by the same holder. Proofs can be of two types: un-ordered (proof set) or ordered (proof chain). Below we summarize the steps to create proof sets and proof chains.
+
+#### Proof Set
+
+Proof set is crated when the proof order is unimportant. Every entity signs the VC/VP, as described in section TBD, without including any proof in the document.
+
+Open questions:
+- Who determines the signees and how is the information included in the VC/VP?
+- Can we require N-out-of-M signatures
+- Do we have additional requirements for iat, exp, nonce (in case of the VP)
+
+#### Proof Chain
+
+Proof chain is created any time VC or VP needs to be signed several times in a particular order. In this case all the previous proofs need to be included and the new signature must be appended to the proof list.
+
+## Proof examples
+
+In this section, we present CAdES, JWS and JAdES as JWS JSON-LD proofs.
+
+### CAdES proof
+
+To sign a VC or VP in the JSON-LD format with CAdES, follow steps 1-7 as
+described in section [Single proof](#single-proof). The signing payload acts as
+input to the CAdES algorithm for signing digests.
+The resulting CAdES signature is DER, PEM or S/MIME encoded. As the JSON-LD
+proof value MUST be a string, the signatures MUST be further transformed as
+summarized in the table below:
+
+| CAdES signature format | As included in JSON-LD proof                    |
+| :--------------------- | :---------------------------------------------- |
+| DER                    | BASE64URL encoded DER octet string.             |
+| PEM                    | PEM with replaced newline characters with '\n'. |
+| S/MIME                 | BASE64URL encoded S/MIME text (UTF-8) document. |
+
+The CAdES JSON-LD proof data model is:
+
+| Claim              | Description                                                                                                                                          | Mandatory | Type                   | Reference                                                     |
+| :----------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :-------- | :--------------------- | :------------------------------------------------------------ |
+| type               | Proof object type. MUST be CAdES2021.                                                                                                                | Yes       | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| alg                | Signature algorithm format. MUST be "cades".                                                                                                         | Yes       | string                 |                                                               |
+| enc                | Signature encoding. MUST be one of "PEM", "DER", "S/MIME".                                                                                           | Yes       | string                 |                                                               |
+| proofPurpose       | Defines the proof purpose. MUST be one of "authentication", "assertionMethod"                                                                        | Yes       | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| verificationMethod | A set of parameters required to independently verify the proof, such as an identifier for a public/private key pair that would be used in the proof. | Yes       | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| created            | Date and time at which the proof has been created.                                                                                                   | Yes       | string (ISO 8601:2004) | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| exp                | Date and time on and after which the proof MUST NOT be accepted for processing. Used in VPs only.                                                    | No        | string (ISO 8691:2004) |                                                               |
+| aud                | Audience(s) that this VP is intended for.                                                                                                            | VP only   | List of strings.       |                                                               |
+| nonce              | Random string value used to associate a Client session with a VP request, and to mitigate replay attacks.                                            | VP only   | string                 |                                                               |
+| proofValue         | Encoded digital signature as specified in the "enc" claim.                                                                                           | VP only   | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+
+#### CAdES VC example
+
+Example goes here.
+
+#### CAdES VP example
+
+Example goes here.
+
+### JSON Web Signature
+
+This section summarizes how to create a detached JWS for a VC or VP in JSON-LD format.
+
+1. Follow the steps 1-7 described in section [Single Proof](#single-proof).
+2. JWT payload is the signing payload as octet string.
+3. Construct the JWS header according to [RFC](https://datatracker.ietf.org/doc/html/rfc7515).
+4. Construct the JWS signing payload as OCTET STRING(BASE64URL(JCS(header)) .) || payload
+5. Sign the payload using the selected JWS signature.
+6. Construct the detached JWS according to [RFC](https://datatracker.ietf.org/doc/html/rfc7515).
+7. Include resulting JWS into the proof.
+
+The CAdES JSON-LD proof data model is:
+
+| Claim              | Description                                                                                                                                          | Mandatory | Type                   | Reference                                                     |
+| :----------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :-------- | :--------------------- | :------------------------------------------------------------ |
+| type               | Proof object type. MUST be CAdES2021.                                                                                                                | Yes       | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| proofPurpose       | Defines the proof purpose. MUST be one of "authentication", "assertionMethod"                                                                        | Yes       | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| verificationMethod | A set of parameters required to independently verify the proof, such as an identifier for a public/private key pair that would be used in the proof. | Yes       | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| created            | Date and time at which the proof has been created.                                                                                                   | Yes       | string (ISO 8601:2004) | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| domain             | A string value specifying the restricted domain of the proof.                                                                                        | VP only   | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| nonce              | Random string value used to associate a Client session with a VP request, and to mitigate replay attacks.                                            | VP only   | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+| enc                | Signature encoding. MUST be "JWS".                                                                                                                   | Yes       | string                 |                                                               |
+| proofValue         | Encoded digital signature as specified in the "enc" claim.                                                                                           | VP only   | string                 | [LD Proofs](https://w3c-ccg.github.io/ld-proofs/#proof-types) |
+
+### JSON Advanced digital Electronic Signatures as JWS
+
+JAdES is a JSON format for Advanced digital Electronic Signature (AdES) built on
+JWS. For details see [ETSI TS 119
+182-1](https://www.etsi.org/deliver/etsi_ts/119100_119199/11918201/01.01.01_60/ts_11918201v010101p.pdf).
+JSON-LD can be transformed into JSON by expanding the JSON-LD, that is replacing
+all claims with definitions from the JSON-LD schema. JAdES can be applied to VCs
+or VPs in JSON-LD formats as follows:
+
+1. Create VC/VP in JSON-LD format.
+2. Expand the JSON-LD as described in [Expanded Document Form](https://www.w3.org/TR/json-ld/#expanded-document-form).
+3. Use the resulting JSON object as input for JAdES.
+4. Sign the JSON.
+5. Include the resulting (detached) JWS into the VC/VP proof.
+
+JAdES proof data model is the same as the JWS proof data model.
+
+JAdES example goes here.
+
 
 # IANA Considerations
 
