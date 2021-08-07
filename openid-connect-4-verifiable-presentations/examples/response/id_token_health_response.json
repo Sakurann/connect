@@ -1,0 +1,25 @@
+{
+   "iss":"https://self-issued.me/v2",
+   "aud":"https://client.example.org/cb",
+   "iat":1615910538,
+   "exp":1615911138,
+   "sub":"did:ion:EiC6Y9_aDaCsITlY06HId4seJjJ-9...mS3NBIn19",
+   "auth_time":1615910535,
+   "nonce":"960848874",
+   "presentation_submission":{
+     "id": "a30e3b91-fb77-4d22-95fa-871689c322e2",
+     "definition_id": "32f54163-7166-48f1-93d8-ff217bdb0653",
+     "descriptor_map": [
+        {
+          "id": "health_insurance",
+          "format": "jwt_vc",
+          "path": "$.verifiable_presentations[0].presentation"
+        }
+      ]
+   },
+   "verifiable_presentations":[
+      {
+         "presentation":"ewogICAgImlzcyI6Imh0dHBzOi8vYm9vay5pdHNvdXJ3ZWIub...IH0="
+      }
+   ]
+}
