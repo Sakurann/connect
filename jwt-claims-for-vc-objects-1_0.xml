@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type='text/xsl' href='http://xml2rfc.tools.ietf.org/authoring/rfc2629.xslt' ?>
+<!DOCTYPE rfc PUBLIC "-//IETF//DTD RFC 2629//EN"
+"http://xml2rfc.tools.ietf.org/authoring/rfc2629.dtd">
+<rfc category="std" docName="jwt-claims-for-vc-objects-1_0" ipr="none">
+
+  <?rfc toc="yes" ?>
+  <?rfc tocdepth="4" ?>
+  <?rfc symrefs="yes" ?>
+  <?rfc sortrefs="yes"?>
+  <?rfc strict="yes" ?>
+  <?rfc iprnotified="no" ?>
+  <?rfc private="Draft" ?>
+  <?rfc compact="yes"?>
+  <?rfc subcompact="no"?>
+
+  <front>
+    <title abbrev="JWT Claims for W3C VC Objects">JWT Claims for W3C Verifiable Credentials Objects 1.0, draft 00</title>
+
+    <author fullname="Michael B. Jones" initials="M.B." surname="Jones">
+      <organization abbrev="Microsoft">Microsoft</organization>
+      <address>
+        <email>mbj@microsoft.com</email>
+	<uri>https://self-issued.info/</uri>
+      </address>
+    </author>
+
+    <author fullname="Kristina Yasuda" initials="K." surname="Yasuda">
+      <organization abbrev="Microsoft">Microsoft</organization>
+      <address>
+        <email>kristina.yasuda@microsoft.com</email>
+	<uri>https://twitter.com/kristinayasuda</uri>
+      </address>
+    </author>
+
+    <author fullname="Oliver Terbu" initials="O." surname="Terbu">
+      <organization abbrev="ConsenSys Mesh">ConsenSys Mesh</organization>
+      <address>
+        <email>oliver.terbu@mesh.xyz</email>
+	<uri>https://twitter.com/OliverTerbu</uri>
+      </address>
+    </author>
+
+    <date day="8" month="April" year="2021" />
+
+    <workgroup>OpenID Connect Working Group</workgroup>
+
+    <abstract>
+      <t>
+	There are use cases in which it is desirable to communicate
+	data structures defined by the
+	W3C Verifiable Credentials Data Model 1.0 specification
+	as JSON Web Token (JWT) claims.
+	This specification defines and registers JWT claims
+	for communicating each of these four data structures defined by
+	W3C Verifiable Credentials Data Model 1.0 specification:
+	a verifiable credential represented as a JWT,
+	a verifiable presentation represented as a JWT,
+	a verifiable credential represented in JSON-LD, and
+	a verifiable presentation represented in JSON-LD.
+      </t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="Introduction" title="Introduction">
+      <t>
+	Numerous kinds systems use JSON Web Tokens (JWTs) <xref target="RFC7519"/>
+	to communicate claims between parties in a standard manner.
+	The W3C Verifiable Credentials Data Model 1.0 specification <xref target="VC"/>
+	defines several kinds of JSON-based data structures that
+	could be passed as values of
+	JavaScript Object Notation (JSON) <xref target="RFC8259"/> objects,
+	including as JWT claim values.
+      </t>
+      <t>
+	This specification defines and registers JWT claims
+	for communicating each of these four data structures defined by
+	W3C Verifiable Credentials Data Model 1.0 specification:
+	a verifiable credential represented as a JWT,
+	a verifiable presentation represented as a JWT,
+	a verifiable credential represented in JSON-LD <xref target="JSON-LD"/>, and
+	a verifiable presentation represented in JSON-LD.
+	Having these claims means that these data structures can be communicated
+	in a standard way in applicaitons employing JWT claims.
+      </t>
+      <t>
+	For example, OpenID Connect <xref target="OpenID.Core"/> uses JWT claims
+	in ID Tokens and as UserInfo Endpoint response values, as well as in other data structures.
+	Note that while ID Tokens are JWTs,
+	UserInfo Endpoint response values are simply JSON objects.
+	The claims defined by this specification could be used in ID Tokens,
+	UserInfo Endpoint responses,
+	and any other data structures employing JWT claims.
+      </t>
+
+      <section title="Requirements Language" anchor="rnc">
+        <t>
+	  The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", 
+	  "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+	  "MAY", and "OPTIONAL" in this document are to be interpreted as 
+	  described in BCP 14 <xref target="RFC2119" /> 
+	  <xref target="RFC8174" /> when, and only when, they
+	  appear in all capitals, as shown here.
+	</t>
+      </section>
+
+      <section anchor="Terminology" title="Terminology">
+	<t>
+	  This specification uses the terms defined by
+	  <xref target="RFC7519">JSON Web Token (JWT)</xref> and by
+	  <xref target="VC">W3C Verifiable Credentials Data Model 1.0</xref>.
+	</t>
+      </section>
+    </section>
+
+    <section anchor="Claims" title="JWT Claims for W3C VC Objects">
+
+      <t>
+	This specification defines the following claims for communicating
+	data structures defined by the
+	W3C Verifiable Credentials Data Model 1.0 specification
+	as JWT claims.
+      </t>
+
+      <section title='"vc_jwt" Claim' anchor="vc_jwt">
+	<t>
+	  The <spanx style="verb">vc_jwt</spanx> claim's value is a
+	  W3C verifiable credential (VC) object using the JWT representation, which is a JSON string.
+	  The claim's value may also be an array of
+	  W3C verifiable credential objects using the JWT representation,
+	  if the use case calls for multiple JWT VCs.
+	</t>
+      </section>
+
+      <section title='"vp_jwt" Claim' anchor="vp_jwt">
+	<t>
+	  The <spanx style="verb">vp_jwt</spanx> claim's value is a
+	  W3C verifiable presentation (VP) object using the JWT representation, which is a JSON string.
+	  The claim's value may also be an array of
+	  W3C verifiable presentation objects using the JWT representation,
+	  if the use case calls for multiple JWT VPs.
+	</t>
+      </section>
+
+      <section title='"vc_ld" Claim' anchor="vc_ld">
+	<t>
+	  The <spanx style="verb">vc_ld</spanx> claim's value is a
+	  W3C verifiable credential (VC) object using the JSON-LD representation, which is a JSON object.
+	  The claim's value may also be an array of
+	  W3C verifiable credential objects using the JSON-LD representation,
+	  if the use case calls for multiple JSON-LD VCs.
+	</t>
+      </section>
+
+      <section title='"vp_ld" Claim' anchor="vp_ld">
+	<t>
+	  The <spanx style="verb">vp_ld</spanx> claim's value is a
+	  W3C verifiable presentation (VP) object using the JSON-LD representation, which is a JSON object.
+	  The claim's value may also be an array of
+	  W3C verifiable presentation objects using the JSON-LD representation,
+	  if the use case calls for multiple JSON-LD VPs.
+	</t>
+      </section>
+
+    </section>
+
+    <section anchor="IANA" title="IANA Considerations">
+
+      <section anchor="ClaimsRegistry" title="JSON Web Token Claims Registration">
+	<t>
+	  This specification registers the Claims defined in
+	  <xref target="Claims"/> in the IANA
+	  "JSON Web Token Claims" registry <xref target="IANA.JWT.Claims"/>
+	  established by <xref target="RFC7519"/>.
+	</t>
+
+	<section anchor='ClaimsContents' title='Registry Contents'>
+	  <t> <?rfc subcompact="yes"?>
+	  <list style='symbols'>
+	    <t>
+	      Claim Name: <spanx style="verb">vc_jwt</spanx>
+	    </t>
+	    <t>
+	      Claim Description: W3C verifiable credential (VC) object using the JWT representation, or an array thereof
+	    </t>
+	    <t>
+	      Change Controller: OpenID Foundation Artifact Binding Working Group - openid-specs-ab@lists.openid.net
+	    </t>
+	    <t>
+	      Specification Document(s): <xref target="vc_jwt"/> of this document
+	    </t>
+	  </list>
+	  </t>
+	  <t>
+	    <list style='symbols'>
+	      <t>
+		Claim Name: <spanx style="verb">vp_jwt</spanx>
+	      </t>
+	      <t>
+		Claim Description: W3C verifiable presentation (VP) object using the JWT representation, or an array thereof
+	      </t>
+	      <t>
+		Change Controller: OpenID Foundation Artifact Binding Working Group - openid-specs-ab@lists.openid.net
+	      </t>
+	      <t>
+		Specification Document(s): <xref target="vp_jwt"/> of this document
+	      </t>
+	    </list>
+	  </t>
+	  <t>
+	    <list style='symbols'>
+	      <t>
+		Claim Name: <spanx style="verb">vc_ld</spanx>
+	      </t>
+	      <t>
+		Claim Description: W3C verifiable credential (VC) object using the JSON-LD representation, or an array thereof
+	      </t>
+	      <t>
+		Change Controller: OpenID Foundation Artifact Binding Working Group - openid-specs-ab@lists.openid.net
+	      </t>
+	      <t>
+		Specification Document(s): <xref target="vc_ld"/> of this document
+	      </t>
+	    </list>
+	  </t>
+	  <t>
+	    <list style='symbols'>
+	      <t>
+		Claim Name: <spanx style="verb">vp_ld</spanx>
+	      </t>
+	      <t>
+		Claim Description: W3C verifiable presentation (VP) object using the JSON-LD representation, or an array thereof
+	      </t>
+	      <t>
+		Change Controller: OpenID Foundation Artifact Binding Working Group - openid-specs-ab@lists.openid.net
+	      </t>
+	      <t>
+		Specification Document(s): <xref target="vp_ld"/> of this document
+	      </t>
+	    </list>
+	  </t>
+	</section>
+	<?rfc subcompact="no"?>
+      </section>
+
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>
+	The security considerations of
+	<xref target="RFC7519">JSON Web Token (JWT)</xref> and
+	<xref target="VC">W3C Verifiable Credentials Data Model 1.0</xref>
+	apply to this specification.
+      </t>
+
+    </section>
+
+  </middle>  
+
+  <back>
+    <references title="Normative References">
+
+      <?rfc include="reference.RFC.2119"?>
+      <?rfc include="reference.RFC.7519"?>
+      <?rfc include="reference.RFC.8174"?>
+      <?rfc include="reference.RFC.8259"?>
+
+      <reference anchor="VC" target="https://www.w3.org/TR/2019/REC-vc-data-model-20191119">
+	<front>
+	  <title>Verifiable Credentials Data Model 1.0</title>
+	  <author fullname="Manu Sporny" initials="M." surname="Sporny"></author>
+	  <author fullname="Dave Longley" initials="D." surname="Longley"></author>
+	  <author fullname="David Chadwick" initials="D." surname="Chadwick"></author>
+	  <date day="19" month="November" year="2019" />
+	</front>
+	<seriesInfo name="W3C" value="Recommendation" />
+      </reference>
+
+      <reference anchor="JSON-LD" target="https://www.w3.org/TR/2020/REC-json-ld11-20200716/">
+	<front>
+	  <title>JSON-LD 1.1</title>
+	  <author fullname="Manu Sporny" initials="M." surname="Sporny"></author>
+	  <author fullname="Dave Longley" initials="D." surname="Longley"></author>
+	  <author fullname="Greg Kellogg" initials="G." surname="Kellogg"></author>
+	  <author fullname="Markus Lanthaler" initials="M." surname="Lanthaler"></author>
+	  <author fullname="Pierre-Antoine Champin" initials="P." surname="Champin"></author>
+	  <author fullname="Niklas Lindström" initials="G." surname="Lindström"></author>
+	  <date day="16" month="July" year="2020" />
+	</front>
+	<seriesInfo name="W3C" value="Recommendation" />
+      </reference>
+
+    </references>
+
+    <references title="Informative References">
+
+      <reference anchor="IANA.JWT.Claims" target="https://www.iana.org/assignments/jwt">
+        <front>
+          <title>JSON Web Token Claims</title>
+          <author>
+            <organization>IANA</organization>
+          </author>
+	  <date/>
+        </front>
+      </reference>
+
+      <reference anchor="OpenID.Core" target="https://openid.net/specs/openid-connect-core-1_0.html">
+        <front>
+          <title>OpenID Connect Core 1.0</title>
+
+          <author fullname="Nat Sakimura" initials="N." surname="Sakimura">
+            <organization abbrev="NAT Consulting">NAT Consulting</organization>
+          </author>
+
+          <author fullname="John Bradley" initials="J." surname="Bradley">
+            <organization abbrev="Ping Identity">Ping Identity</organization>
+          </author>
+
+          <author fullname="Michael B. Jones" initials="M.B." surname="Jones">
+            <organization abbrev="Microsoft">Microsoft</organization>
+          </author>
+
+          <author fullname="Breno de Medeiros" initials="B." surname="de Medeiros">
+            <organization abbrev="Google">Google</organization>
+          </author>
+
+	  <author fullname="Chuck Mortimore" initials="C." surname="Mortimore">
+	    <organization abbrev="Salesforce">Salesforce</organization>
+	  </author>
+
+          <date day="25" month="February" year="2014"/>
+        </front>
+	<seriesInfo name="OpenID Foundation" value="Standards" />
+      </reference>
+
+    </references>
+
+    <section anchor="Acknowledgements" title="Acknowledgements">
+      <t>
+	The need for and design of these claims,
+	enabling integration of the JWT and VC worlds,
+	resulted from discussions in the OpenID Connect working group.
+      </t>
+    </section>
+
+    <section anchor="Notices" title="Notices">
+      <t>Copyright (c) 2021 The OpenID Foundation.</t>
+      <t>
+	The OpenID Foundation (OIDF) grants to any Contributor, developer, 
+	implementer, or other interested party a non-exclusive, royalty free, 
+	worldwide copyright license to reproduce, prepare derivative works from, 
+	distribute, perform and display, this Implementers Draft or 
+	Final Specification solely for the purposes of (i) developing 
+	specifications, and (ii) implementing Implementers Drafts and 
+	Final Specifications based on such documents, provided that attribution 
+	be made to the OIDF as the source of the material, but that such attribution 
+	does not indicate an endorsement by the OIDF.
+      </t>
+      <t>
+	The technology described in this specification was 
+	made available from contributions from various sources, 
+	including members of the OpenID Foundation and others.  
+	Although the OpenID Foundation has taken steps to help ensure 
+	that the technology is available for distribution, it takes 
+	no position regarding the validity or scope of any intellectual 
+	property or other rights that might be claimed to pertain to 
+	the implementation or use of the technology described in 
+	this specification or the extent to which any license under 
+	such rights might or might not be available; neither does it 
+	represent that it has made any independent effort to identify 
+	any such rights.  The OpenID Foundation and the contributors 
+	to this specification make no (and hereby expressly disclaim any) 
+	warranties (express, implied, or otherwise), including implied 
+	warranties of merchantability, non-infringement, fitness for 
+	a particular purpose, or title, related to this specification, 
+	and the entire risk as to implementing this specification is 
+	assumed by the implementer.  The OpenID Intellectual 
+	Property Rights policy requires contributors to offer 
+	a patent promise not to assert certain patent claims against 
+	other contributors and against implementers.  The OpenID Foundation invites 
+	any interested party to bring to its attention any copyrights, 
+	patents, patent applications, or other proprietary rights 
+	that may cover technology that may be required to practice 
+	this specification.
+      </t>
+    </section>
+  </back>
+</rfc>
