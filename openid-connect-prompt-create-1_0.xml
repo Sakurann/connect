@@ -30,7 +30,7 @@
       <address><email>gffletch@aol.com</email></address>
     </author>
 
-    <date day="4" month="November" year="2020" />
+    <date day="8" month="September" year="2021" />
 
     <workgroup>OpenID Connect Working Group</workgroup>
 
@@ -132,37 +132,20 @@
         Core 1.0.
       </t>
       <t>
-        How the OpenID Provider handles prompt values that it fails to parse is out of scope for this specification.
-
-        -or-
-
-        If the OpenID Provider fails to parse the provided value(s) it should ignore the
-        <spanx style="verb">prompt</spanx> parameter value and proceed as if the <spanx style="verb">prompt</spanx> parameter
-        was not specified.
+        If the OpenID Provider receives a prompt value that it does not support (not declared in the
+        <spanx style="verb">prompt_values_supported</spanx> metadata field) the OP SHOULD respond with
+        an HTTP 400 (Bad Request) status code and an error value of <spanx style="verb">invalid_request</spanx>.
+        It is RECOMMENDED that the OP return an error_description value identifying the invalid parameter value.
       </t>
-      <t>
-        An example of an authorization request where the client tells the OpenID Provider that it wants the user to
-        start from the account creation user experience is shown in <xref target="authz-endpoint-example-token"/> below
-        (extra line breaks and indentation are for display purposes only).
 
-<figure title="Implicit Flow Authorization Request" anchor="authz-endpoint-example-token">
-<artwork><![CDATA[
-  GET /as/authorization.oauth2?response_type=id_token
-     &client_id=example-client
-     &state=XzZaJlcwYew1u0QBrRv_Gw
-     &redirect_uri=https%3A%2F%2Fclient%2Eexample%2Eorg%2Fcb
-     &prompt=create
-     &scope=openid%20profile HTTP/1.1
-  Host: authorization-server.example.com
-]]></artwork>
-</figure>
-      </t>
       <t>
           In <xref target="authz-endpoint-example-code"/> is an example of an authorization request
           using the <spanx style="verb">code</spanx> response type
-          where the the client tells the OpenID Provider that it wants the user to
+          where the client tells the OpenID Provider that it wants the user to
           start from the account creation user experience
           (extra line breaks and indentation are for display purposes only).
+      </t>
+      <t>
 
         <figure title="Code Flow Authorization Request" anchor="authz-endpoint-example-code">
           <artwork><![CDATA[
@@ -176,6 +159,7 @@
 ]]></artwork>
         </figure>
       </t>
+
     </section>
 
     <section anchor="discovery" title="Discovery Metadata">
@@ -193,9 +177,20 @@
          </list>
       </t>
       <t>
+        This metadata element is OPTIONAL in the context of the OpenID Provider
+        not supporting the <spanx style="verb">create</spanx> value. If omitted,
+        the Relying Party should assume that this specification is not
+        supported. The OpenID Provider MAY provide this metadata element even
+        if it doesn't support the <spanx style="verb">create</spanx> value.
+      </t>
+      <t>
          Specific to this specification, a value of
-         <spanx style="verb">create</spanx> indicates to the Relying party
-         that this OpenID Provider supports this specification.
+         <spanx style="verb">create</spanx> in the arrauy indicates to the Relying party
+         that this OpenID Provider supports this specification. If an OpenID
+         Provider supports this specification it MUST define this metadata
+         element in the openid-configuration file. Additionally, if this
+         metadata element is defined by the OpenID Provider, the OP must
+         also specify all other prompt values which it supports.
       </t>
     </section>
 
@@ -342,6 +337,9 @@
         <list style="symbols">
 	  <t>
 	    Incorporated feedback from issued filed in bitbucket.
+      Also removed the 'implicit' flow example.
+      Updated text regarding what the OP should do if it does
+      not support a requested prompt value.
 	  </t>
 	</list>
       </t>
