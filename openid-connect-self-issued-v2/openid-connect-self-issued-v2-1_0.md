@@ -398,6 +398,16 @@ Self-Issued OP and the RP that wish to support request and presentation of Verif
 
 Verifiable Presentation is a tamper-evident presentation encoded in such a way that authorship of the data can be trusted after a process of cryptographic verification. Certain types of verifiable presentations might contain data that is synthesized from, but do not contain, the original verifiable credentials (for example, zero-knowledge proofs). [VC-DATA-MODEL]
 
+# Response as Push
+
+The OAuth 2.0 Pushed Authorization Requests ([@!PAR]) specification outlines a number of challenges relating to passing values as URL parameters.  SIOP has these same challenges, but due to the nature of being implemented on a mobile device it can occur on the response as well as on the request.
+
+In order to support large responses that may contain verifiable presenations, SIOP leverages the same solution as defined in [@!PAR] but with different entities in the roles: The Relying Party acts as the server and the SIOP acts as the client.
+
+## Relying Party Metadata
+
+## Differences from PAR
+
 # Self-Issued ID Token Validation {#siop-id_token-validation}
 See [@!OIDC4VP] on how to support multiple credential formats such as JWT and Linked Data Proofs.
 
@@ -647,6 +657,19 @@ The scope of this draft was an extention to OpenID Connect Chapter 7 Self-Issued
         </author>
         <date day="3" month="Aug" year="2021"/>
         </front>
+</reference>
+
+<reference anchor="pushed-authorization-request" target="https://datatracker.ietf.org/doc/draft-ietf-oauth-par/">
+  <front>
+    <title>OAuth 2.0 Pushed Authorization Requests</title>
+    <author initials="T." surname="Lodderstedt" fullname="Torsten Lodderstedt">
+      <organization>yes.com</organization>
+    </author>
+		<author fullname="Nat Sakimura">
+      <organization>NAT.Consulting</organization>
+    </author>
+    <date day="29" month="July" year="2021"/>
+  </front>
 </reference>
 
 <reference anchor="did-spec-registries" target="https://w3c.github.io/did-spec-registries/#did-methods">
