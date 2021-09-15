@@ -398,15 +398,26 @@ Self-Issued OP and the RP that wish to support request and presentation of Verif
 
 Verifiable Presentation is a tamper-evident presentation encoded in such a way that authorship of the data can be trusted after a process of cryptographic verification. Certain types of verifiable presentations might contain data that is synthesized from, but do not contain, the original verifiable credentials (for example, zero-knowledge proofs). [VC-DATA-MODEL]
 
-# Response as Push
+# Response-as-Push (RAP)
 
-The OAuth 2.0 Pushed Authorization Requests ([@!PAR]) specification outlines a number of challenges relating to passing values as URL parameters.  SIOP has these same challenges, but due to the nature of being implemented on a mobile device it can occur on the response as well as on the request.
+The OAuth 2.0 Pushed Authorization Requests ([@!PAR]) specification outlines a number of challenges relating to passing values as URL parameters.  SIOP has these same challenges, but due to the nature of being implemented on a mobile device it can occur on the response flow as well as on the initial request.
 
 In order to support large responses that may contain verifiable presenations, SIOP leverages the same solution as defined in [@!PAR] but with different entities in the roles: The Relying Party acts as the server and the SIOP acts as the client.
 
+This introduces a new response parameter of `response_uri` that functions identically to the existing `request_uri` except that it references the response body instead of the request body.  All security considerations and standards language around `request_uri` apply to this new `response_uri` parameter.
+
 ## Relying Party Metadata
 
+The RP metadata required is defined in [@!PAR] but with minor naming changes while preserving the rest of the definition:
+* `pushed_authorization_request_endpoint` instead of `pushed_authorization_request_endpoint`
+* `require_pushed_authorization_responses` instead of `require_pushed_authorization_requests`
+* "relying party" instead of "authorization server"
+
 ## Differences from PAR
+
+With PAR the flow is being driven by the OAuth client, but with RAP it is the SIOP implementation.  By nature of being self-issued, these implementations are typically mobile apps and will be completing the request by asking the OS to load the final `redirect_uri` with the correct parameters.  
+
+That URI may also be registered locally as being handled by another installed native app, which allows that RP app to continue the user experience directly.  Alternatively, it will allow the RP to provide a web experience for further instructions or feedback.
 
 # Self-Issued ID Token Validation {#siop-id_token-validation}
 See [@!OIDC4VP] on how to support multiple credential formats such as JWT and Linked Data Proofs.
