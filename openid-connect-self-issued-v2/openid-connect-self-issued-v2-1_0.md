@@ -409,7 +409,7 @@ This introduces a new response parameter of `response_uri` that functions identi
 ## Relying Party Metadata
 
 The RP metadata required is defined in [@!PAR] but with minor naming changes while preserving the rest of the definition:
-* `pushed_authorization_request_endpoint` instead of `pushed_authorization_request_endpoint`
+* `pushed_authorization_response_endpoint` instead of `pushed_authorization_request_endpoint`
 * `require_pushed_authorization_responses` instead of `require_pushed_authorization_requests`
 * "relying party" instead of "authorization server"
 
