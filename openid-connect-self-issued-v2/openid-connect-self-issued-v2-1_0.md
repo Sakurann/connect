@@ -398,29 +398,29 @@ Self-Issued OP and the RP that wish to support request and presentation of Verif
 
 Verifiable Presentation is a tamper-evident presentation encoded in such a way that authorship of the data can be trusted after a process of cryptographic verification. Certain types of verifiable presentations might contain data that is synthesized from, but do not contain, the original verifiable credentials (for example, zero-knowledge proofs). [VC-DATA-MODEL]
 
-# Response-as-Push (RAP)
+# Pushed Authorization Responses
 
 A common use-case for Self-Issued OPs is requesting and receiving Verifiable Presentations.  Both the authorization request and redirect response containing verifiable presenation data can grow quite large, such that the resulting URIs are longer than popular browsers can support.
 
-In order to support these larger requests and responses, the OAuth 2.0 Pushed Authorization Requests ([@!PAR]) specification is used.  Since [@!PAR] is defined for the request flow, we must extend it here to support the response flow as well.
+The OAuth 2.0 Pushed Authorization Requests ([@!PAR]) RFC is a well defined solution for this on the request flow, and is used here to support the response flow as well.
 
-To summarize the flow defined by [@!PAR]: when the URIs may grow too large the target entity of those URIs must advertise a supporting endpoint in their metadata with two values: `pushed_authorization_request_endpoint` and `require_pushed_authorization_requests`.  The entity forming the URI can then choose to first `POST` to this endpoint and receive back a short-lived unguessable URI which is then passed in as the `request_uri` to complete the flow.
+To summarize the flow defined by [@!PAR]: when the URIs may grow too large the target entity of those URIs can advertise a supporting endpoint in their metadata with two values: `pushed_authorization_request_endpoint` and `require_pushed_authorization_requests`.  The entity forming the URI can then choose to first `POST` to this endpoint and receive back a short-lived unguessable URI which is subsequently passed in as the `request_uri` to complete the flow.
 
-In order to support this same pattern for the response flow by a Self-Issued OP, the Relying Party must instead advertise the two [@!PAR] metadata values, provide the endpoint service, and process the `request_uri` when passed in via the `redirect_uri` to complete the flow.
+In order to support this same pattern for the response flow by a Self-Issued OP, it is the Relying Party that  instead advertises the two [@!PAR] metadata values, provides the endpoint service, and processes the `request_uri` when passed in via the `redirect_uri` to complete the flow.
 
 ## Cross Device
 
-Using RAP is also an ideal solution when Self-Issued OPs are used in cross device flows, where the request may be initiated via a scanned QR code, NFC tag, or BLE beacon.  In these flows there may be limited or no ability to return a large response over the same channel.  A Relying Party that supports these flows should consider using RAP to allow responses to come from another device.
+Using [@!PAR] is also an ideal solution when Self-Issued OPs are used in cross device flows, where the request may be initiated via a scanned QR code, NFC tag, or BLE beacon.  In these flows there may be limited or no ability to return a large response over the same channel.  A Relying Party that supports these flows should consider using [@!PAR] to process the responses coming from another device where the `redirect_uri` would not return on the same channel.
 
 There are two important considerations when implementing cross device support:
-1. The `redirect_uri` will be loaded in a browser on the other device where any cookies set when the request started will not be available, so any statefulness needs to be tracked server-side or included in the redirect.
-2. The response is not bound to the requesting channel on the original device, leaving it extremely vulnerable to trivial phishing attacks.  When attempting to use cross device for authentication, the requesting device MUST be managed such that the user cannot have navigated it to potential phishing sites.
+1. The `redirect_uri` will be loaded in a browser on the authenticating device and not where the request was initiated, so any statefulness needs to be tracked server-side or included in the redirect.
+2. The response is not bound to the requesting channel on the original device, leaving it extremely vulnerable to trivial phishing attacks.  When using a cross device flow for authentication the requesting device MUST be managed such that the user cannot have navigated it to potential phishing sites.
 
 ## Mobile User Experience
 
 When Self-Issued OP implementations are mobile apps they will be completing the request by asking the OS to load the final `redirect_uri` with the correct parameters.
 
-That redirect URI may already be registered to the OS by another installed native app, which allows that Relying Party app to load and continue the native experience.  Alternatively, if not installed such as in a cross-device flow it will allow the Relying Party to provide a web experience for further instructions or to install their app.
+That redirect URI may already be registered to the OS by the Relying Party's native app, allowing it to load and continue the native experience.  Alternatively, if the app is not installed (such as in a cross-device flow) it will allow the Relying Party to provide a web experience for further instructions or a path to install their app.
 
 # Self-Issued ID Token Validation {#siop-id_token-validation}
 See [@!OIDC4VP] on how to support multiple credential formats such as JWT and Linked Data Proofs.
