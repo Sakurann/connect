@@ -459,63 +459,6 @@ The following is a non-normative example of a base64url decoded Self-Issued ID T
 　}
 ```
 
-# Cross Device SIOP
-
-This section describes how SIOP is used in cross device scenarios. In contrast to on device scenarios, neither RP nor SIOP can communicate to each other via HTTP redirects through an user agent. The flow is therefore modfied as follows:
-
-1. The RP prepares a SIOP request and renders it as a QR code.
-2. The user scans the QR code with her smartphone's camera app.
-3. The standard mechanisms for invoking the SIOP are used on the smartphone (based on the openid custom scheme).
-4. The SIOP processes the authentication request.
-5. Upon completion of the authentication request, the SIOP directly sends a HTTP POST request with the authentication response to an endpoint exposed by the RP.
-
-Note: the request in step 5 is not a form post request where the SIOP would respond to a user agent with a form, which automatically triggers a POST request to the RP. The SIOP sends this request directly to the RP's endpoint.
-
-## Authentication Request
-
-The cross device authentication request differs from the on-device variant as defined in (#siop_authentication_request) as follows:
-
-* This specification introduces a new response mode `post` in accordance with [OIDM]. This response mode is used to request the SIOP to deliver the result of the authentication process to a certain endpoint. The additional parameter `response_mode` is used to carry this value.
-* This endpoint the SIOP shall deliver the authentication result to is conveyed in the standard parameter `redirect_uri`.
-* The RP MUST ensure the `nonce` value used for a particular transaction is available at this endpoint for security checks.
-
-Here is an example of an authentication request URL:
-
-```
-    openid://?
-    response_type=id_token
-    &response_mode=post
-    &client_id=https%3A%2F%2Fclient.example.org%2Fcb
-    &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
-    &scope=openid%20profile
-    &state=af0ifjsldkj
-    &nonce=n-0S6_WzA2Mj
-    &registration=%7B%22subject_identifier_types_supported%22:%5B%22jkt%22%5D,
-    %22id_token_signing_alg_values_supported%22:%5B%22RS256%22%5D%7D
-```
-
-Note: Such an authentication request might result in a large QR code, especially when including a `claims` parameter and extensive registration data. A RP MAY consider to use a `request_uri` in such a case.
-
-## Authentication Response
-
-The SIOP sends the authentication response to the endpoint passed in the `redirect_uri` authentication request parameter using a HTTP POST request using "application/x-www-form-urlencoded" encoding. The authentication response contains the parameters as defined in (#siop-authentication-response).
-
-Here is an example:
-
-```http
-  POST /cb HTTP/1.1
-  Host: client.example.com
-  Content-Type: application/x-www-form-urlencoded
-
-  &id_token=eyJ0 ... NiJ9.eyJ1c ... I6IjIifX0.DeWt4Qu ... ZXso
-```
-
-## ID Token Validation
-
-The RP MUST perform all the check as defined in (#siop-id_token-validation)
-
-Additionally, the RP MUST check whether the `nonce` claim value provided in the ID Token is known to the RP and was not used before in an authentication response.
-
 # References
 
 The following is a non-normative example of an ID token containing a verifiable presentation (with line wraps within values for display purposes only):
