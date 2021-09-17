@@ -616,16 +616,26 @@ The scope of this draft was an extention to OpenID Connect Chapter 7 Self-Issued
         </front>
 </reference>
 
-<reference anchor="pushed-authorization-request" target="https://datatracker.ietf.org/doc/draft-ietf-oauth-par/">
+<reference anchor="pushed-authorization-request" target="https://datatracker.ietf.org/doc/rfc9126/">
   <front>
-    <title>OAuth 2.0 Pushed Authorization Requests</title>
+    <title abbrev="OAuth PAR">OAuth 2.0 Pushed Authorization Requests</title>
+    <seriesInfo name="RFC" value="9126" stream="IETF"/>
     <author initials="T." surname="Lodderstedt" fullname="Torsten Lodderstedt">
       <organization>yes.com</organization>
     </author>
-		<author fullname="Nat Sakimura">
+    <author initials="B." surname="Campbell" fullname="Brian Campbell">
+      <organization>Ping Identity</organization>
+    </author>
+    <author initials="N." surname="Sakimura" fullname="Nat Sakimura">
       <organization>NAT.Consulting</organization>
     </author>
-    <date day="29" month="July" year="2021"/>
+    <author initials="D." surname="Tonge" fullname="Dave Tonge">
+      <organization>Moneyhub Financial Technology</organization>
+    </author>
+    <author initials="F." surname="Skokan" fullname="Filip Skokan">
+      <organization>Auth0</organization>
+    </author>
+    <date month="09" year="2021"/>
   </front>
 </reference>
 
