@@ -404,9 +404,9 @@ A common use-case for Self-Issued OPs is requesting and receiving Verifiable Pre
 
 To summarize the flow defined by [@!PAR]: when the request URI is too large, the Authorization Server (AS) can advertise a supporting endpoint in their metadata with two values: `pushed_authorization_request_endpoint` and `require_pushed_authorization_requests`.  The OAuth Client can then `POST` to this endpoint and receive back a short-lived unguessable URI which is subsequently used in the normal request flow as the `request_uri` parameter.
 
-In order to support this same pattern for the response flow by a Self-Issued OP we need to change the roles and names from those used in PAR.  Instead of the AS advertising and hosting the endpoint, it is the Relying Party that provides this.  Instead of the OAuth Client detecting and performing the `POST`, it is the SIOP implementation that acts as the HTTP client.
+In order to support this same pattern as PAR, the roles and names need to be updated for the response flow by a Self-Issued OP.  Instead of the AS advertising and hosting the endpoint, it is the Relying Party that provides this.  Instead of the OAuth Client detecting and performing the `POST`, it is the SIOP implementation that acts as the HTTP client.
 
-The definition of PARM that follows borrows heavily from the PAR language with a focus on highlighting where they diverge.
+The definition of PARM that follows is OPTIONAL for implementers.  It borrows heavily from the PAR RFC, focusing on highlighting where the roles and terms diverge.
 
 ## PARM Endpoint {#parm_endpoint}
 
@@ -468,7 +468,7 @@ The following Relying Party metadata parameters are introduced to signal the ser
 : The URL of the pushed authorization responset endpoint at which an SIOP implementation can `POST` an authorization response to exchange for a `response_uri` value usable in the `redirect_uri`.  The presence of this value is sufficient for SIOP to determine that it may use the PARM flow.
 
 `require_pushed_authorization_responses`
-: Boolean parameter indicating whether the Relying Party accepts authorization response data only via PARM. If omitted, the default value is `false`. 
+: Boolean parameter indicating whether the Relying Party accepts authorization response data ONLY via PARM. If omitted, the default value is `false`. 
 
 ## Cross Device {#parm_cross_device}
 
