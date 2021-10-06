@@ -477,6 +477,7 @@ Using PARM is also an ideal solution when Self-Issued OPs are used in cross devi
 There are two important considerations when implementing cross device support:
 1. Since the `redirect_uri` will continue the flow in a _different_ browser on the _authenticating_ device and not where the request was initiated, any statefulness needs to be tracked server-side by the relying party and/or embedded into the `state` request and response parameter.
 2. The response is not bound to the requesting channel on the original device, leaving it extremely vulnerable to trivial phishing attacks.  When using a cross device flow for authentication the requesting device MUST be managed such that the user cannot have navigated it to potential phishing sites.
+3. If the Relying Party is located on an internal network, it may be required to host the PARM endpoint outside of that network and accessible to authenticating devices which may not be on the same network.
 
 ## Mobile User Experience {#parm_mobile}
 
