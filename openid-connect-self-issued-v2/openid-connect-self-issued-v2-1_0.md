@@ -230,7 +230,7 @@ The following is a non-normative example of the supported Self-issued OP Discove
 
 ## Relying Party Registration
 
-Each Relying Party must communicate, within the Self-Issued OpenID Provider Request, which metadata parameters it supports. If the Self-Issued OP and the RP mutually support a compatible set of parameters, the Self-Issued OP flow continues. If they do not, Self-Issued OP returns an error to the user. 
+Each Relying Party must communicate, within the Self-Issued OpenID Provider Request, which metadata parameters it supports. If the Self-Issued OP and the RP mutually support a compatible set of parameters, the Self-Issued OP flow continues. If they do not, Self-Issued OP returns an error. 
 
 Note that in the Self-Issued OP flow no registration response is returned. A successful authentication response implicitly indicates that the registration parameters were accepted.
 
