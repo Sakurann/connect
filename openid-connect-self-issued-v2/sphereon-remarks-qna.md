@@ -1,8 +1,8 @@
 In the scope chapter it talks about the implicit flow on several occasions. For people not really into OpenID Connect it probably makes sense to link that to the respective spec
+
 **->** addressed in a sphereon-comments PR https://bitbucket.org/openid/connect/pull-requests/61
 
-## Self-Issued OpenID Provider Discovery
-
+> ## Self-Issued OpenID Provider Discovery
 > Even if possible, such signals may be susceptible to fingerprinting and passive tracking of the End-user.
 
 This sort of comes out of the blue. It doesn't really explain the problem, which might be confusing to people. Is the sentence really required?
