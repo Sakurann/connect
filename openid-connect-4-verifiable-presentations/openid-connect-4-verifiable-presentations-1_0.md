@@ -76,7 +76,7 @@ An application currently utilizing OpenID Connect for accessing various federate
 
 ## Existing OpenID Connect OP as custodian of End-User Credentials
 
-An existing OpenID Connect may extends its service by maintaining credentials issued by other claims sources on behalf of its customers. Customers can mix claims of the OP and from their credentials to fulfil authentication requests. 
+An existing OpenID Connect OP may extends its service by maintaining credentials issued by other claims sources on behalf of its customers. Customers can mix claims of the OP and from their credentials to fulfil authentication requests. 
 
 ## Federated OpenID Connect OP adds device-local mode
 
